@@ -8,10 +8,10 @@
     <script src="https://cdn.jsdelivr.net/npm/spark-md5@3.0.2/spark-md5.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen py-8">
+<body class="bg-gray-100 min-h-screen py-2">
     <div id="app" class="max-w-3xl mx-auto px-4">
         <div class="bg-white rounded-lg shadow-md p-8">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">大文件分片上传示例</h1>
+            <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">大文件分片上传示例</h1>
 
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-6"
                  :class="{ 'border-blue-500 bg-blue-50': isDragging }"
@@ -21,13 +21,13 @@
                  @drop.prevent="handleDrop">
                 <input type="file" ref="fileInput" class="hidden" @change="handleFileSelect">
                 <div class="text-gray-500">
-                    <p class="text-lg mb-2">拖拽文件到此处或点击选择</p>
+                    <p class="text-[1rem] mb-2">拖拽文件到此处或点击选择</p>
                     <p class="text-sm text-gray-400">支持任意类型文件</p>
                 </div>
             </div>
 
             <div v-if="file" class="mb-6">
-                <div class="bg-gray-50 rounded-lg p-4">
+                <div class="bg-gray-100 rounded-lg p-4 text-sm">
                     <div class="flex justify-between mb-2">
                         <span class="text-gray-600">文件名:</span>
                         <span class="font-medium text-gray-800">{{ file.name }}</span>

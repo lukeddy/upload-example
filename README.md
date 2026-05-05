@@ -35,3 +35,7 @@ mvn spring-boot:run
 | `/api/upload/check` | POST | 检查文件(MD5、秒传、已上传分片) |
 | `/api/upload/chunk` | POST | 上传单个分片 |
 | `/api/upload/merge` | POST | 合并所有分片 |
+
+## 效果截图
+
+<img alt="upload-screenshot.png" width="600" src="docs/upload-screenshot.png"/> 
