@@ -47,19 +47,7 @@
                 </div>
             </div>
 
-            <div class="flex gap-3 mb-10">
-                <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400"
-                        :disabled="!file || isUploading || status === '秒传成功' || status === '上传完成'"
-                        @click="startUpload">
-                    {{ uploadBtnText }}
-                </button>
-                <button v-if="isUploading" class="px-6 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 rounded-lg transition-colors"
-                        @click="togglePause">
-                    {{ isPaused ? '继续' : '暂停' }}
-                </button>
-            </div>
-
-            <div v-if="file && (isUploading || status === '上传完成' || status === '上传中...' || status === '已暂停' || status === '继续上传...')" class="mb-6">
+            <div v-if="file" class="mb-6">
                 <div class="mb-2">
                     <span class="text-gray-600">上传状态:</span>
                     <span class="ml-2 text-blue-600">{{ status }}</span>
@@ -71,6 +59,29 @@
                 <div class="flex justify-between mt-1 text-sm text-gray-500">
                     <span>{{ uploadedCount }}</span>
                     <span>{{ totalChunks }}</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400"
+                        :disabled="!file || isUploading || status === '秒传成功' || status === '上传完成'"
+                        @click="startUpload">
+                    {{ uploadBtnText }}
+                </button>
+                <button v-if="isUploading" class="px-6 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 rounded-lg transition-colors"
+                        @click="togglePause">
+                    {{ isPaused ? '继续' : '暂停' }}
+                </button>
+            </div>
+
+            <div v-if="file" class="mt-4">
+                <div class="text-sm text-gray-600 mb-2">分片状态 ({{ uploadedCount }}/{{ totalChunks }})</div>
+                <div class="flex flex-wrap gap-1">
+                    <div v-for="i in totalChunks" :key="i"
+                         class="h-8 w-8 flex items-center justify-center text-xs rounded transition-colors"
+                         :class="getChunkClass(i-1)">
+                        {{ i }}
+                    </div>
                 </div>
             </div>
 
@@ -104,6 +115,7 @@
                 const isPaused = ref(false);
                 const isUploading = ref(false);
                 const uploadedChunks = ref([]);
+                const currentUploadingChunk = ref(-1);
                 const status = ref('');
                 const result = ref('');
                 const resultType = ref('success');
@@ -183,6 +195,7 @@
                     file.value = f;
                     fileMd5.value = '';
                     uploadedChunks.value = [];
+                    currentUploadingChunk.value = -1;
                     isPaused.value = false;
                     isUploading.value = false;
                     result.value = '';
@@ -203,7 +216,10 @@
 
                     if (checkResult.exists) {
                         status.value = '秒传成功';
-                        uploadedChunks.value = [0];
+                        uploadedChunks.value = [];
+                        for (let i = 0; i < totalChunks.value; i++) {
+                            uploadedChunks.value.push(i);
+                        }
                         result.value = '文件已存在，直接完成！';
                     } else {
                         uploadedChunks.value = [];
@@ -233,8 +249,11 @@
                         }
 
                         if (uploadedChunks.value.includes(i)) {
+                            currentUploadingChunk.value = i;
                             continue;
                         }
+
+                        currentUploadingChunk.value = i;
 
                         const start = i * chunkSize.value;
                         const end = Math.min(start + chunkSize.value, file.value.size);
@@ -266,6 +285,7 @@
                     await mergeRes.json();
 
                     isUploading.value = false;
+                    currentUploadingChunk.value = -1;
                     status.value = '上传完成';
                     result.value = '文件上传成功！';
                 }
@@ -277,6 +297,16 @@
                     } else {
                         status.value = '继续上传...';
                     }
+                }
+
+                function getChunkClass(index) {
+                    if (uploadedChunks.value.includes(index)) {
+                        return 'bg-green-500 text-white';
+                    }
+                    if (currentUploadingChunk.value === index) {
+                        return 'bg-yellow-500 text-white';
+                    }
+                    return 'bg-gray-300 text-gray-600';
                 }
 
                 init();
@@ -301,7 +331,8 @@
                     handleDrop,
                     formatSize,
                     startUpload,
-                    togglePause
+                    togglePause,
+                    getChunkClass
                 };
             }
         }).mount('#app');
