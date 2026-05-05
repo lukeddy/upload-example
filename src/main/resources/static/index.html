@@ -76,9 +76,9 @@
 
             <div v-if="file" class="mt-4">
                 <div class="text-sm text-gray-600 mb-2">分片状态 ({{ uploadedCount }}/{{ totalChunks }})</div>
-                <div class="flex flex-wrap gap-1">
+                <div class="grid grid-cols-10 gap-1">
                     <div v-for="i in totalChunks" :key="i"
-                         class="h-8 w-8 flex items-center justify-center text-xs rounded transition-colors"
+                         class="h-8 flex items-center justify-center text-xs rounded transition-colors"
                          :class="getChunkClass(i-1)">
                         {{ i }}
                     </div>
