@@ -47,7 +47,19 @@
                 </div>
             </div>
 
-            <div v-if="file" class="mb-6">
+            <div class="flex gap-3 mb-10">
+                <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400"
+                        :disabled="!file || isUploading || status === '秒传成功' || status === '上传完成'"
+                        @click="startUpload">
+                    {{ uploadBtnText }}
+                </button>
+                <button v-if="isUploading" class="px-6 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 rounded-lg transition-colors"
+                        @click="togglePause">
+                    {{ isPaused ? '继续' : '暂停' }}
+                </button>
+            </div>
+
+            <div v-if="file && (isUploading || status === '上传完成' || status === '上传中...' || status === '已暂停' || status === '继续上传...')" class="mb-6">
                 <div class="mb-2">
                     <span class="text-gray-600">上传状态:</span>
                     <span class="ml-2 text-blue-600">{{ status }}</span>
@@ -60,18 +72,6 @@
                     <span>{{ uploadedCount }}</span>
                     <span>{{ totalChunks }}</span>
                 </div>
-            </div>
-
-            <div class="flex gap-3">
-                <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400"
-                        :disabled="!file || isUploading || status === '秒传成功' || status === '上传完成'"
-                        @click="startUpload">
-                    {{ uploadBtnText }}
-                </button>
-                <button v-if="isUploading" class="px-6 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 rounded-lg transition-colors"
-                        @click="togglePause">
-                    {{ isPaused ? '继续' : '暂停' }}
-                </button>
             </div>
 
             <div v-if="result" class="mt-6 p-4 rounded-lg" :class="resultClass">
